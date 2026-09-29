@@ -75,7 +75,7 @@ public class Example_ParentOpMode extends LinearOpMode {
     //put global variables here...
     //
     //
-    //
+
 
     public void initialize(){
         // Initialize the hardware variables. Note that the strings used here as parameters
@@ -86,7 +86,7 @@ public class Example_ParentOpMode extends LinearOpMode {
         leftFront = hardwareMap.get(DcMotor.class,"lf_drive");
         leftBack = hardwareMap.get(DcMotor.class, "lb_drive");
 
-        //Set motor run mode (if using SPARK Mini motor controllers)
+        //Set motor run modes
 
 
         //Set Motor  and servo Directions
