@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -129,7 +130,7 @@ public class Example_ParentOpMode extends LinearOpMode {
         while (opModeIsActive()) {
 
             // code here should never actually execute in parent opmode.
-            // This function will be be overridden by child opmode classes
+            // This function will be overridden by child opmode classes
 
 
             //include emergency stop check in all runOpMode() functions/methods
