@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -44,7 +43,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  */
 @TeleOp(name = "ball count test", group = "Sensor")
 //@Disabled
-public class SensorDigitalTouch extends LinearOpMode {
+public class BallCounterTest extends LinearOpMode {
     DigitalChannel countSwitch;  // Digital channel Object
 
     int ballCount =0;
@@ -55,10 +54,11 @@ public class SensorDigitalTouch extends LinearOpMode {
         // get a reference to our touchSensor object.
         countSwitch = hardwareMap.get(DigitalChannel.class, "count_switch");
 
-//        DigitalEdgeDetector ballCounter = new DigitalEdgeDetector(digitalTouch);
-
         countSwitch.setMode(DigitalChannel.Mode.INPUT);
-        telemetry.addData("DigitalTouchSensorExample", "Press start to continue...");
+
+        DigitalEdgeDetector ballCounterSwitch = new DigitalEdgeDetector(countSwitch);
+
+        telemetry.addData("Ball Count Tester", "Press start to continue...");
         telemetry.update();
 
         // wait for the start button to be pressed.
@@ -70,7 +70,7 @@ public class SensorDigitalTouch extends LinearOpMode {
 
             // button is pressed if value returned is LOW or false.
             // send the info back to driver station using telemetry function.
-            if (countSwitch.getState() == false) {
+            if(countSwitch.getState() == false){
                 telemetry.addData("Button", "PRESSED");
             } else {
                 telemetry.addData("Button", "NOT PRESSED");
@@ -80,11 +80,12 @@ public class SensorDigitalTouch extends LinearOpMode {
                 ballCount = ballCount + 1;
             }
             if (gamepad1.yWasPressed()){
-                ballCount-=1;
+                ballCount -= 1;
             }
 
             telemetry.addData("count",ballCount);
 
+            ballCounterSwitch.update(); // Updates state for edge detection
             telemetry.update();
         }
     }

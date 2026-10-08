@@ -18,24 +18,21 @@ public class DigitalEdgeDetector {
         this.previousState = channel.getState();
     }
 
-    /**
-     * Call this exactly once at the beginning or end of your loop.
-     */
+
+    // Call once per loop to kep track of state
     public void update() {
         previousState = channel.getState();
     }
 
-    /**
-     * Returns true only on the loop cycle the button is pressed (transitioning to false).
-     */
+
+    // Returns true only on the loop cycle the button is pressed (transitioning to false).
     public boolean wasPressed() {
         return !channel.getState() && previousState;
     }
 
-    /**
-     * Returns true only on the loop cycle the button is released (transitioning to true).
-     */
-    public boolean wasReleasedEdge() {
+
+    // Returns true only on the loop cycle the button is released (transitioning to true).
+    public boolean wasReleased() {
         return channel.getState() && !previousState;
     }
 }
