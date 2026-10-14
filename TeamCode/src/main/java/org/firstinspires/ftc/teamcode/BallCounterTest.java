@@ -56,7 +56,7 @@ public class BallCounterTest extends LinearOpMode {
 
         countSwitch.setMode(DigitalChannel.Mode.INPUT);
 
-        DigitalEdgeDetector ballCounterSwitch = new DigitalEdgeDetector(countSwitch);
+        DigitalEdgeDetector ballCounterSwitch = new DigitalEdgeDetector(countSwitch); //
 
         telemetry.addData("Ball Count Tester", "Press start to continue...");
         telemetry.update();
@@ -76,7 +76,7 @@ public class BallCounterTest extends LinearOpMode {
                 telemetry.addData("Button", "NOT PRESSED");
             }
 
-            if(gamepad1.bWasPressed()){
+            if (ballCounterSwitch.wasPressed()){
                 ballCount = ballCount + 1;
             }
             if (gamepad1.yWasPressed()){
@@ -85,7 +85,7 @@ public class BallCounterTest extends LinearOpMode {
 
             telemetry.addData("count",ballCount);
 
-            ballCounterSwitch.update(); // Updates state for edge detection
+            ballCounterSwitch.update();    // Update state for edge detection
             telemetry.update();
         }
     }
