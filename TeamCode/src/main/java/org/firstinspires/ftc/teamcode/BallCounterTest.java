@@ -45,7 +45,6 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 //@Disabled
 public class BallCounterTest extends LinearOpMode {
     DigitalChannel countSwitch;  // Digital channel Object
-
     int ballCount =0;
 
     @Override
@@ -55,8 +54,14 @@ public class BallCounterTest extends LinearOpMode {
         countSwitch = hardwareMap.get(DigitalChannel.class, "count_switch");
 
         countSwitch.setMode(DigitalChannel.Mode.INPUT);
+        DigitalEdgeDetector ballCounterSwitch = new DigitalEdgeDetector(countSwitch);
 
-        DigitalEdgeDetector ballCounterSwitch = new DigitalEdgeDetector(countSwitch); //
+        //DigitalEdgeDetector ballCounterSwitch = new DigitalEdgeDetector(countSwitch); //
+
+
+
+
+        telemetry.setMsTransmissionInterval(10);            //set telemetry transmission interval to less than default (250) [ms]
 
         telemetry.addData("Ball Count Tester", "Press start to continue...");
         telemetry.update();
@@ -89,4 +94,6 @@ public class BallCounterTest extends LinearOpMode {
             telemetry.update();
         }
     }
+
+
 }
