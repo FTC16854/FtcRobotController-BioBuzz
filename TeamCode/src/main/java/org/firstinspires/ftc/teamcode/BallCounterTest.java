@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
  * This OpMode demonstrates how to use a digital channel.
@@ -46,6 +47,9 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 public class BallCounterTest extends LinearOpMode {
     DigitalChannel countSwitch;  // Digital channel Object
     int ballCount =0;
+    public ElapsedTime runtime = new ElapsedTime();
+    double Currenttime = runtime.milliseconds();
+    double debouncetime=10;
 
     @Override
     public void runOpMode() {
@@ -73,6 +77,8 @@ public class BallCounterTest extends LinearOpMode {
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
 
+            ballCounterSwitch.update();    // Update state for edge detection
+
             // button is pressed if value returned is LOW or false.
             // send the info back to driver station using telemetry function.
             if(countSwitch.getState() == false){
@@ -90,7 +96,7 @@ public class BallCounterTest extends LinearOpMode {
 
             telemetry.addData("count",ballCount);
 
-            ballCounterSwitch.update();    // Update state for edge detection
+//            ballCounterSwitch.update();    // Update state for edge detection
             telemetry.update();
         }
     }

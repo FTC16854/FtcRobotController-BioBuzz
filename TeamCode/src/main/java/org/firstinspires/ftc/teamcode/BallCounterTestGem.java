@@ -45,7 +45,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 //@Disabled
 public class BallCounterTestGem extends LinearOpMode {
     DigitalChannel countSwitch;  // Digital channel Object
-    int ballCount =0;
+    int ballCount = 0;
 
     @Override
     public void runOpMode() {
