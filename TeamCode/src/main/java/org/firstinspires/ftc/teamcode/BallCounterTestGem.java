@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
  * This OpMode demonstrates how to use a digital channel.
@@ -46,10 +47,12 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 public class BallCounterTestGem extends LinearOpMode {
     DigitalChannel countSwitch;  // Digital channel Object
     int ballCount = 0;
+    public ElapsedTime timer = new ElapsedTime();
+    double debouncetime = 150;  // ms
+
 
     @Override
     public void runOpMode() {
-
         // get a reference to our touchSensor object.
         countSwitch = hardwareMap.get(DigitalChannel.class, "count_switch");
 
@@ -62,9 +65,6 @@ public class BallCounterTestGem extends LinearOpMode {
 
         //DigitalEdgeDetector ballCounterSwitch = new DigitalEdgeDetector(countSwitch); //
 
-
-
-
 //        telemetry.setMsTransmissionInterval(10);            //set telemetry transmission interval to less than default (250) [ms]
 
         telemetry.addData("Ball Count Tester", "Press start to continue...");
@@ -72,17 +72,19 @@ public class BallCounterTestGem extends LinearOpMode {
 
         // wait for the start button to be pressed.
         waitForStart();
+        timer.reset();
 
         // while the OpMode is active, loop and read the digital channel.
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
-
             currentSwitchState = countSwitch.getState();
 
-            if (currentSwitchState && !previousSwitchState) {
+            if (currentSwitchState && !previousSwitchState &&timer.milliseconds()>debouncetime) {
                 ballCount++; // Object just triggered the switch
+                timer.reset();
             }
             previousSwitchState = currentSwitchState;
+
 
 
             // button is pressed if value returned is LOW or false.
