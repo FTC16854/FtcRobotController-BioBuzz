@@ -49,21 +49,23 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "ball shoter", group = "Sensor")
 //@Disabled
 public class ballshouter extends LinearOpMode {
-    DigitalChannel countSwitch;  // Digital channel Object
-    int ballCount = 0;
+
     public ElapsedTime timer = new ElapsedTime();
 
-    private DcMotorEx Shoter = hardwareMap.get(DcMotorEx.class,"shouter");
+
 
 
 
     @Override
     public void runOpMode() {
+        DcMotorEx Shoter = hardwareMap.get(DcMotorEx.class,"shouter");
 
         Shoter.setDirection(DcMotorSimple.Direction.FORWARD);
         Shoter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        telemetry.addData("Ball Count Tester", "Press start to continue...");
+        double velocity = 1000;
+
+        telemetry.addData("Velocity Test", "Press start to continue...");
         telemetry.update();
 
         // wait for the start button to be pressed.
@@ -72,6 +74,24 @@ public class ballshouter extends LinearOpMode {
 
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
+            if (gamepad1.x){
+                Shoter.setVelocity(velocity);
+            }
+            else {
+                Shoter.setVelocity(0);
+            }
+
+            if (gamepad1.y) {
+               velocity=velocity+10;
+
+
+            } else if (gamepad1.a) {
+                velocity=velocity-10;
+
+
+            }
+            telemetry.addData("velocity", Shoter.getVelocity());
+            telemetry.addData("target velocity", velocity);
 
 
 
