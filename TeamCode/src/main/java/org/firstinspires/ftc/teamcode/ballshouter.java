@@ -63,7 +63,10 @@ public class ballshouter extends LinearOpMode {
         Shoter.setDirection(DcMotorSimple.Direction.FORWARD);
         Shoter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        double velocity = 1000;
+        double velocity = 1000; //pulses per second
+        double PPR=28;
+
+
 
         telemetry.addData("Velocity Test", "Press start to continue...");
         telemetry.update();
@@ -74,6 +77,9 @@ public class ballshouter extends LinearOpMode {
 
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
+            double TargetRPM=((velocity)/(PPR))*(60);
+            double RPM=((Shoter.getVelocity())/(PPR))*(60);
+
             if (gamepad1.x){
                 Shoter.setVelocity(velocity);
             }
@@ -90,9 +96,11 @@ public class ballshouter extends LinearOpMode {
 
 
             }
+
             telemetry.addData("velocity", Shoter.getVelocity());
             telemetry.addData("target velocity", velocity);
-
+            telemetry.addData("RPM",RPM);
+            telemetry.addData("Target RPM",TargetRPM);
 
 
             telemetry.update();
