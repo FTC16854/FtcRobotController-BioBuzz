@@ -48,7 +48,7 @@ public class BallCounterTestGem extends LinearOpMode {
     DigitalChannel countSwitch;  // Digital channel Object
     int ballCount = 0;
     public ElapsedTime timer = new ElapsedTime();
-    double debouncetime = 50;  // ms //150  //100
+    double debouncetime = 35;  // ms //150  //100 //50
 
 
     @Override

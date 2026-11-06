@@ -69,8 +69,7 @@ public class Example_ParentOpMode extends LinearOpMode {
 
     private DcMotor rightFront = null;
     private DcMotor rightBack = null;
-    private DcMotor leftFront = null;
-    private DcMotor leftBack = null;
+
 
     //Other Global Variables
     //put global variables here...
@@ -84,8 +83,7 @@ public class Example_ParentOpMode extends LinearOpMode {
         // step (using the FTC Driver Station app or Driver Hub).
         rightFront = hardwareMap.get(DcMotor.class, "rf_drive");
         rightBack = hardwareMap.get(DcMotor.class, "rb_drive");
-        leftFront = hardwareMap.get(DcMotor.class,"lf_drive");
-        leftBack = hardwareMap.get(DcMotor.class, "lb_drive");
+
 
         //Set motor run modes
 
@@ -93,14 +91,12 @@ public class Example_ParentOpMode extends LinearOpMode {
         //Set Motor  and servo Directions
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
+
 
         //Set brake or coast modes.
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //BRAKE or FLOAT (Coast)
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         //Update Driver Station Status Message after init
         telemetry.addData("Status:", "Initialized");
@@ -158,24 +154,15 @@ public class Example_ParentOpMode extends LinearOpMode {
         return gamepad1.left_stick_x;
     }
     public double left_sticky_y() { return -gamepad1.left_stick_y;}
-    public double right_sticky_y() { return -gamepad1.right_stick_y;}
-    public double right_sticky_x() { return  gamepad1.right_stick_x;}
+
+
+
     
 
     // Buttons
     public boolean emergencyButtons(){
         // check for combination of buttons to be pressed before returning true
         return true;
-    }
-
-
-    public boolean triggerButton(){
-        if((gamepad1.right_trigger>.25)||(gamepad2.right_trigger>.25)){
-            return true;         // Converts analog triggers into digital button presses (booleans)
-        }
-        else{
-            return false;
-        }
     }
 
 
