@@ -33,7 +33,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -63,16 +64,28 @@ public class ParentOpMode extends LinearOpMode {
 
     // Declare OpMode members, hardware variables
     public ElapsedTime runtime = new ElapsedTime();
-
     private DcMotor rightFront = null;
     private DcMotor rightBack = null;
     private DcMotor leftfrunt = null;
     private DcMotor leftback = null;
 
+    private DcMotorEx Shoter = null;
+
+    private DigitalChannel countSwitch = null;
+
     //Other Global Variables
     //put global variables here...
-    //
-    //
+
+    //Shooter Variables
+    double targetVelocity =1000;//pulses per second
+    double PPR=28;//pulses per revolution
+
+    // Ball Counter
+    public ElapsedTime ballCountTimer = new ElapsedTime();
+    double debouncetime=35;//ms
+    int ballcount=0;
+    boolean currentSwitchState=false;
+    boolean previousSwitchState=false;
 
 
     public void initialize(){
@@ -83,22 +96,30 @@ public class ParentOpMode extends LinearOpMode {
         rightBack = hardwareMap.get(DcMotor.class, "rb_drive");
         leftback = hardwareMap. get(DcMotor.class,"lb_drive");
         leftfrunt =hardwareMap. get(DcMotor.class,"lf_drive");
+        Shoter= hardwareMap. get (DcMotorEx.class,"shouter");
+        countSwitch=hardwareMap. get (DigitalChannel.class, "count_switch");
 
 
         //Set motor run modes
-
+        Shoter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //Set Motor  and servo Directions
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         leftfrunt.setDirection(DcMotor.Direction.FORWARD);
         leftback.setDirection(DcMotor.Direction.FORWARD);
+        Shoter.setDirection(DcMotor.Direction.FORWARD);
+
 
         //Set brake or coast modes.
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //BRAKE or FLOAT (Coast)
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftback.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftfrunt.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Shoter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        //Set Digital I/O Modes
+        countSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         //Update Driver Station Status Message after init
         telemetry.addData("Status:", "Initialized");
@@ -134,13 +155,8 @@ public class ParentOpMode extends LinearOpMode {
 
             //include emergency stop check in all runOpMode() functions/methods
             //implementation depends on which E-stop function will be used (boolean/void)
-            if(emergencyStopped()){
-                //terminateOpModeNow();   // New method in 2022. (Immediately, Cleanly exits OpMode)
-                break;
-            }
 
-            //checkEmergencyStop(); // Stops motors and Terminates if buttons are pressed
-            //without additional code in the while(opModeIsActive) loop.
+            checkEmergencyStop(); // Stops motors and Terminates if buttons are pressed
 
             telemetry.update();
         }
@@ -156,37 +172,37 @@ public class ParentOpMode extends LinearOpMode {
         return gamepad1.left_stick_x;
     }
     public double left_sticky_y() { return -gamepad1.left_stick_y;}
+    public double right_sticky_x() {return gamepad1.right_stick_x;}
+    public double right_sticky_y() {return -gamepad1.right_stick_y;}
 
 
 
-    
+
 
     // Buttons
     public boolean emergencyButtons(){
         // check for combination of buttons to be pressed before returning true
-        return true;
+        return (gamepad1.y && gamepad1.b) || (gamepad2.y && gamepad2.b);
+
     }
+
+    public boolean flywheelButton(){
+        return gamepad1.x;
+    }
+    public boolean shooterspeedupbutton(){return gamepad1.dpad_up;}
+    public boolean shooterslowdownbutton(){return gamepad1.dpad_down;}
+
+
 
 
     /****************************/
     // Emergency Stop Functions
-    // Only one of these is needed.
-    // If using boolean version, call to function will need to be
-    // placed in conditional (if/then) statement with code to break from loop or terminate opmode.
-
-    public boolean emergencyStopped(){
-        if (emergencyButtons()) {
-            //stop all motors, servos, etc.
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
 
     public void checkEmergencyStop(){
         if(emergencyButtons()){
             //stop all motors, servos, etc.
+
+            stopDrive();
             terminateOpModeNow();   // Force exit of OpMode
         }
     }
@@ -200,16 +216,55 @@ public class ParentOpMode extends LinearOpMode {
     // thumb stick values inside function body. This will allow tank drive to be reused for
     // autonomous programs without additional work
     public void tankdrive(double left, double right){
-
+        leftfrunt.setPower(left);
+        leftback.setPower(left);
+        rightFront.setPower(right);
+        rightBack.setPower(right);
     }
 
-
+    public void stopDrive(){
+            tankdrive(0,0);
+    }
 
 
     /*****************************/
     //More Methods (Functions)
 
+    public void RunShoter(){
+        double TargetRPM=((targetVelocity)/(PPR))*(60);
+        double RPM=((Shoter.getVelocity())/(PPR))*(60);
 
+        if (flywheelButton()){
+            Shoter.setVelocity(targetVelocity);
+        }
+        else {
+            Shoter.setVelocity(0);
+        }
+
+        if (shooterspeedupbutton()) {
+            targetVelocity = targetVelocity +5;
+        } else if (shooterslowdownbutton()) {
+            targetVelocity = targetVelocity -5;
+        }
+
+        telemetry.addData("velocity", Shoter.getVelocity());
+        telemetry.addData("target velocity", targetVelocity);
+        telemetry.addData("RPM",RPM);
+        telemetry.addData("Target RPM",TargetRPM);
+    }
+
+
+    public void BallCounter(){
+        currentSwitchState = countSwitch.getState();
+
+        if (currentSwitchState && !previousSwitchState && ballCountTimer.milliseconds()>debouncetime) {
+            ballcount++; // Object just triggered the switch
+            ballCountTimer.reset();
+        }
+        previousSwitchState = currentSwitchState;
+
+        telemetry.addData("count",ballcount);
+    }
 
     /*****************************/
     //Autonomous Functions

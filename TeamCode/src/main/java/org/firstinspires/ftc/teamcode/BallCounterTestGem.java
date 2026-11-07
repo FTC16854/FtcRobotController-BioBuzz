@@ -47,7 +47,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class BallCounterTestGem extends LinearOpMode {
     DigitalChannel countSwitch;  // Digital channel Object
     int ballCount = 0;
-    public ElapsedTime timer = new ElapsedTime();
+    public ElapsedTime ballCountTimer = new ElapsedTime();
     double debouncetime = 35;  // ms //150  //100 //50
 
 
@@ -72,16 +72,16 @@ public class BallCounterTestGem extends LinearOpMode {
 
         // wait for the start button to be pressed.
         waitForStart();
-        timer.reset();
+        ballCountTimer.reset();
 
         // while the OpMode is active, loop and read the digital channel.
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
             currentSwitchState = countSwitch.getState();
 
-            if (currentSwitchState && !previousSwitchState &&timer.milliseconds()>debouncetime) {
+            if (currentSwitchState && !previousSwitchState && ballCountTimer.milliseconds()>debouncetime) {
                 ballCount++; // Object just triggered the switch
-                timer.reset();
+                ballCountTimer.reset();
             }
             previousSwitchState = currentSwitchState;
 
