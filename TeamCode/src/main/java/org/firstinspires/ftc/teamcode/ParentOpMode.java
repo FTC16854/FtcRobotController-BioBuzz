@@ -32,8 +32,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -69,7 +71,10 @@ public class ParentOpMode extends LinearOpMode {
     private DcMotor leftfrunt = null;
     private DcMotor leftback = null;
 
+    private DcMotor intake = null;
     private DcMotorEx Shoter = null;
+
+    private CRServo ballloder = null;
 
     private DigitalChannel countSwitch = null;
 
@@ -80,6 +85,11 @@ public class ParentOpMode extends LinearOpMode {
     double targetVelocity =1000;//pulses per second
     double PPR=28;//pulses per revolution
 
+    double ballloderspeed=0.8;
+
+    //Intake
+    double speedintake=0.5;
+    double reversspeedintske=0.2;
     // Ball Counter
     public ElapsedTime ballCountTimer = new ElapsedTime();
     double debouncetime=35;//ms
@@ -95,9 +105,12 @@ public class ParentOpMode extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotor.class, "rf_drive");
         rightBack = hardwareMap.get(DcMotor.class, "rb_drive");
         leftback = hardwareMap. get(DcMotor.class,"lb_drive");
-        leftfrunt =hardwareMap. get(DcMotor.class,"lf_drive");
-        Shoter= hardwareMap. get (DcMotorEx.class,"shouter");
-        countSwitch=hardwareMap. get (DigitalChannel.class, "count_switch");
+        leftfrunt = hardwareMap. get(DcMotor.class,"lf_drive");
+        intake = hardwareMap. get(DcMotor.class,"intake");
+        Shoter = hardwareMap. get (DcMotorEx.class,"shouter");
+        ballloder = hardwareMap. get(CRServo.class,"ballloder");
+        countSwitch = hardwareMap. get (DigitalChannel.class, "count_switch");
+
 
 
         //Set motor run modes
@@ -108,8 +121,9 @@ public class ParentOpMode extends LinearOpMode {
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         leftfrunt.setDirection(DcMotor.Direction.FORWARD);
         leftback.setDirection(DcMotor.Direction.FORWARD);
+        intake.setDirection(DcMotor.Direction.FORWARD);
         Shoter.setDirection(DcMotor.Direction.FORWARD);
-
+        ballloder.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //Set brake or coast modes.
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //BRAKE or FLOAT (Coast)
@@ -117,6 +131,7 @@ public class ParentOpMode extends LinearOpMode {
         leftback.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftfrunt.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Shoter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Set Digital I/O Modes
         countSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -191,9 +206,10 @@ public class ParentOpMode extends LinearOpMode {
     }
     public boolean shooterspeedupbutton(){return gamepad1.dpad_up;}
     public boolean shooterslowdownbutton(){return gamepad1.dpad_down;}
+    public boolean intakeButton(){return gamepad1.right_trigger_pressed;}
+    public boolean intakeButtonrevers(){return gamepad1.left_trigger_pressed;}
 
-
-
+    public boolean ballloderButton(){return gamepad1.right_bumper;}
 
     /****************************/
     // Emergency Stop Functions
@@ -253,6 +269,27 @@ public class ParentOpMode extends LinearOpMode {
         telemetry.addData("Target RPM",TargetRPM);
     }
 
+    public void intakeBoss(){
+        if(intakeButton()){
+            intake.setPower(speedintake);
+        } else if (intakeButtonrevers()) {
+            intake.setPower(-reversspeedintske);
+        }
+        else{
+            intake.setPower(0);
+        }
+    }
+
+
+    public void launchr(){
+        if (ballloderButton()){
+            ballloder.setPower(ballloderspeed);
+        }
+        else {
+            ballloder.setPower(0);
+        }
+    }
+
 
     public void BallCounter(){
         currentSwitchState = countSwitch.getState();
@@ -265,6 +302,8 @@ public class ParentOpMode extends LinearOpMode {
 
         telemetry.addData("count",ballcount);
     }
+
+
 
     /*****************************/
     //Autonomous Functions
