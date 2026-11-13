@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -242,6 +243,40 @@ public class ParentOpMode extends LinearOpMode {
             tankdrive(0,0);
     }
 
+    public void mecanumDrive(double Robotspeed,double Driveangle,double rotationspeed){
+        Driveangle=Math.toRadians(Driveangle);
+
+        double vlf =(Robotspeed * Math.cos(Driveangle + (Math.PI / 4)) + rotationspeed);
+        double vlb =(Robotspeed * Math.sin(Driveangle + (Math.PI / 4)) + rotationspeed);
+        double vrf =(Robotspeed * Math.sin(Driveangle + (Math.PI / 4)) - rotationspeed);
+        double vrb =(Robotspeed * Math.cos(Driveangle + (Math.PI / 4)) - rotationspeed);
+
+        leftback.setPower(vlb);
+        leftfrunt.setPower(vlf);
+        rightBack.setPower(vrb);
+        rightFront.setPower(vrf);
+    }
+
+   public void manuwallderive()
+    {
+        double thumstikspeed= Math.hypot(left_sticky_y(),left_sticky_x());
+        double thumsyikangle= Math.atan2(left_sticky_y(),left_sticky_x());
+        double rotashonfibuler= left_sticky_x();
+
+        mecanumDrive(thumstikspeed,thumsyikangle,thumsyikangle);
+
+    }
+
+
+
+
+
+//        double Vlf = (magnitude * Math.cos(angle + (Math.PI / 4)) + rotateVelocity);
+//        double Vlb = (magnitude * Math.sin(angle + (Math.PI / 4)) + rotateVelocity);
+//        double Vrf = (magnitude * Math.sin(angle + (Math.PI / 4)) - rotateVelocity);
+//        double Vrb = (magnitude * Math.cos(angle + (Math.PI / 4)) - rotateVelocity);
+
+
 
     /*****************************/
     //More Methods (Functions)
@@ -302,6 +337,9 @@ public class ParentOpMode extends LinearOpMode {
 
         telemetry.addData("count",ballcount);
     }
+
+
+
 
 
 
