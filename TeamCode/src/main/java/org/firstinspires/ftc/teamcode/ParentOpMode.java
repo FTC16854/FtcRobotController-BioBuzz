@@ -37,7 +37,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -107,9 +106,12 @@ public class ParentOpMode extends LinearOpMode {
         rightBack = hardwareMap.get(DcMotor.class, "rb_drive");
         leftback = hardwareMap. get(DcMotor.class,"lb_drive");
         leftfrunt = hardwareMap. get(DcMotor.class,"lf_drive");
+
         intake = hardwareMap. get(DcMotor.class,"intake");
         Shoter = hardwareMap. get (DcMotorEx.class,"shouter");
+
         ballloder = hardwareMap. get(CRServo.class,"ballloder");
+
         countSwitch = hardwareMap. get (DigitalChannel.class, "count_switch");
 
 
@@ -257,25 +259,15 @@ public class ParentOpMode extends LinearOpMode {
         rightFront.setPower(vrf);
     }
 
-   public void manuwallderive()
+   public void manuwalMecanumDerive()
     {
         double thumstikspeed= Math.hypot(left_sticky_y(),left_sticky_x());
         double thumsyikangle= Math.atan2(left_sticky_y(),left_sticky_x());
-        double rotashonfibuler= left_sticky_x();
+        double rotashonhi= right_sticky_x();
 
-        mecanumDrive(thumstikspeed,thumsyikangle,thumsyikangle);
+        mecanumDrive(thumstikspeed,thumsyikangle,rotashonhi);
 
     }
-
-
-
-
-
-//        double Vlf = (magnitude * Math.cos(angle + (Math.PI / 4)) + rotateVelocity);
-//        double Vlb = (magnitude * Math.sin(angle + (Math.PI / 4)) + rotateVelocity);
-//        double Vrf = (magnitude * Math.sin(angle + (Math.PI / 4)) - rotateVelocity);
-//        double Vrb = (magnitude * Math.cos(angle + (Math.PI / 4)) - rotateVelocity);
-
 
 
     /*****************************/
@@ -307,14 +299,17 @@ public class ParentOpMode extends LinearOpMode {
     public void intakeBoss(){
         if(intakeButton()){
             intake.setPower(speedintake);
+            telemetry.addData("Intake:", speedintake);
         } else if (intakeButtonrevers()) {
             intake.setPower(-reversspeedintske);
+            telemetry.addData("Intake:", speedintake);
         }
         else{
             intake.setPower(0);
+            telemetry.addData("Intake:", 0);
         }
-    }
 
+    }
 
     public void launchr(){
         if (ballloderButton()){
@@ -324,7 +319,6 @@ public class ParentOpMode extends LinearOpMode {
             ballloder.setPower(0);
         }
     }
-
 
     public void BallCounter(){
         currentSwitchState = countSwitch.getState();
