@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -38,6 +39,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 /**
  * Original FTC opmode header block
@@ -78,6 +83,8 @@ public class ParentOpMode extends LinearOpMode {
 
     private DigitalChannel countSwitch = null;
 
+    GoBildaPinpointDriver pinpoint;
+
     //Other Global Variables
     //put global variables here...
 
@@ -96,6 +103,12 @@ public class ParentOpMode extends LinearOpMode {
     int ballcount=0;
     boolean currentSwitchState=false;
     boolean previousSwitchState=false;
+
+    // odometry
+    Pose2D pose2D;
+    double robotwhy=0;
+    double robotx=0;
+    double headinghi=0;
 
 
     public void initialize(){
@@ -138,6 +151,8 @@ public class ParentOpMode extends LinearOpMode {
 
         //Set Digital I/O Modes
         countSwitch.setMode(DigitalChannel.Mode.INPUT);
+
+        pinpointinit();
 
         //Update Driver Station Status Message after init
         telemetry.addData("Status:", "Initialized");
@@ -245,8 +260,8 @@ public class ParentOpMode extends LinearOpMode {
             tankdrive(0,0);
     }
 
-    public void mecanumDrive(double Robotspeed,double Driveangle,double rotationspeed){
-        Driveangle=Math.toRadians(Driveangle);
+    public void mecanumDrive(double Robotspeed,double Driveangle,double rotationspeed, double Angaleofset){
+        Driveangle = Math.toRadians(Driveangle- Angaleofset) ;
 
         double vlf =(Robotspeed * Math.cos(Driveangle + (Math.PI / 4)) + rotationspeed);
         double vlb =(Robotspeed * Math.sin(Driveangle + (Math.PI / 4)) + rotationspeed);
@@ -261,11 +276,12 @@ public class ParentOpMode extends LinearOpMode {
 
    public void manuwalMecanumDerive()
     {
+
         double thumstikspeed= Math.hypot(left_sticky_y(),left_sticky_x());
         double thumsyikangle= Math.atan2(left_sticky_y(),left_sticky_x());
         double rotashonhi= right_sticky_x();
 
-        mecanumDrive(thumstikspeed,thumsyikangle,rotashonhi);
+        mecanumDrive(thumstikspeed,thumsyikangle,rotashonhi,headinghi);
 
     }
 
@@ -333,24 +349,83 @@ public class ParentOpMode extends LinearOpMode {
     }
 
 
-
-
-
-
     /*****************************/
-    //Autonomous Functions
+    //Odometry Functions
+    public void pinpointinit() {
+        // Get a reference to the sensor
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-    /*****************************/
-    //Encoder Functions
+        // Configure the sensor
+        configurePinpoint();
+
+        // Set the location of the robot - this should be the place you are starting the robot from
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+    }
+    public void configurePinpoint() {
+        /*
+         *  Set the odometry pod positions relative to the point that you want the position to be measured from.
+         *
+         *  The X pod offset refers to how far sideways from the tracking point the X (forward) odometry pod is.
+         *  Left of the center is a positive number, right of center is a negative number.
+         *
+         *  The Y pod offset refers to how far forwards from the tracking point the Y (strafe) odometry pod is.
+         *  Forward of center is a positive number, backwards is a negative number.
+         */
+        pinpoint.setOffsets(-84.0, -168.0, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+
+        /*
+         * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
+         * the goBILDA_SWINGARM_POD, or the goBILDA_4_BAR_POD.
+         * If you're using another kind of odometry pod, uncomment setEncoderResolution and input the
+         * number of ticks per unit of your odometry pod.  For example:
+         *     pinpoint.setEncoderResolution(13.26291192, DistanceUnit.MM);
+         */
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+
+        /*
+         * Set the direction that each of the two odometry pods count. The X (forward) pod should
+         * increase when you move the robot forward. And the Y (strafe) pod should increase when
+         * you move the robot to the left.
+         */
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
+                GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+        /*
+         * Before running the robot, recalibrate the IMU. This needs to happen when the robot is stationary
+         * The IMU will automatically calibrate when first powered on, but recalibrating before running
+         * the robot is a good idea to ensure that the calibration is "good".
+         * resetPosAndIMU will reset the position to 0,0,0 and also recalibrate the IMU.
+         * This is recommended before you run your autonomous, as a bad initial calibration can cause
+         * an incorrect starting value for x, y, and heading.
+         */
+        pinpoint.resetPosAndIMU();
+
+
+        /*****************************/
+        //Autonomous Functions
+
+        /*****************************/
+        //Encoder Functions
    /*
     public double getLeftVerticalEncoder(){
         return rightFront.getCurrentPosition();
     }
     */
 
-    /*****************************/
-    //Gyro Functions
 
+    }
+
+    public void moveterack(){
+        pose2D = pinpoint.getPosition();
+        robotwhy = pose2D.getY(DistanceUnit.INCH);
+        robotx = pose2D.getX(DistanceUnit.INCH);
+        headinghi = pose2D.getHeading(AngleUnit.DEGREES);
+
+        telemetry.addData("robotx cordnets", robotx);
+        telemetry.addData("robotwhy",robotwhy);
+        telemetry.addData("headinghi", headinghi);
+
+    }
 
 
 }
