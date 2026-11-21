@@ -64,6 +64,7 @@ public class tanckderive extends ParentOpMode {
 
             tankdrive(left_sticky_y(),right_sticky_y());
             BallCounter();
+            collercount();
             intakeBoss();
             RunShoter();
             launchr();

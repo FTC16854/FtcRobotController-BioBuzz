@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -83,6 +84,8 @@ public class ParentOpMode extends LinearOpMode {
 
     private DigitalChannel countSwitch = null;
 
+    private Servo tinylight= null;
+
     GoBildaPinpointDriver pinpoint;
 
     //Other Global Variables
@@ -95,7 +98,7 @@ public class ParentOpMode extends LinearOpMode {
     double ballloderspeed=0.8;
 
     //Intake
-    double speedintake=0.5;
+    double speedintake=0.7;
     double reversspeedintske=0.2;
     // Ball Counter
     public ElapsedTime ballCountTimer = new ElapsedTime();
@@ -110,7 +113,15 @@ public class ParentOpMode extends LinearOpMode {
     double robotx=0;
     double headinghi=0;
 
-
+    //light colors
+    double blue= 0.611;
+    double green= 0.500;
+    double red= 0.277;
+    double yellow= 0.388;
+    double orange= 0.333;
+    double violet= 0.722;
+    double white= 1.0;
+    double off= 0.0;
     public void initialize(){
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
@@ -120,13 +131,14 @@ public class ParentOpMode extends LinearOpMode {
         leftback = hardwareMap. get(DcMotor.class,"lb_drive");
         leftfrunt = hardwareMap. get(DcMotor.class,"lf_drive");
 
+
         intake = hardwareMap. get(DcMotor.class,"intake");
         Shoter = hardwareMap. get (DcMotorEx.class,"shouter");
 
         ballloder = hardwareMap. get(CRServo.class,"ballloder");
 
         countSwitch = hardwareMap. get (DigitalChannel.class, "count_switch");
-
+        tinylight = hardwareMap.get (Servo.class,"tinylight");
 
 
         //Set motor run modes
@@ -228,6 +240,8 @@ public class ParentOpMode extends LinearOpMode {
     public boolean intakeButtonrevers(){return gamepad1.left_trigger_pressed;}
 
     public boolean ballloderButton(){return gamepad1.right_bumper;}
+
+    public boolean couterresetbutton(){return gamepad1.left_stick_button;}
 
     /****************************/
     // Emergency Stop Functions
@@ -345,6 +359,10 @@ public class ParentOpMode extends LinearOpMode {
         }
         previousSwitchState = currentSwitchState;
 
+        if (couterresetbutton()){
+             ballcount=0;
+        }
+
         telemetry.addData("count",ballcount);
     }
 
@@ -426,6 +444,36 @@ public class ParentOpMode extends LinearOpMode {
         telemetry.addData("headinghi", headinghi);
 
     }
+
+    public void Tinylightcoller(double lightcoller){
+
+        tinylight.setPosition(lightcoller);
+    }
+
+
+   public void collercount(){
+
+    if (ballcount==0){
+        Tinylightcoller(green);
+    } else if (ballcount==1) {
+      Tinylightcoller(blue);}
+    else if (ballcount==2) {
+        Tinylightcoller(yellow);
+    } else if (ballcount==3) {
+      Tinylightcoller(orange);
+    } else if (ballcount==4) {
+      Tinylightcoller(red);
+    } else if (ballcount>4) {
+      Tinylightcoller(violet);
+    }
+
+
+   }
+
+
+
+
+
 
 
 }

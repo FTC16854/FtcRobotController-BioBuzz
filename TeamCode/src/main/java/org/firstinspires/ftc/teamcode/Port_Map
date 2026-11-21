@@ -8,7 +8,7 @@ Motor Ports                    Configuration Names           Color
 Servo Ports
     0   ballloder               ballloder
     1
-    2
+    2   tinylight               tinylight
     3
     4
     5
