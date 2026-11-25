@@ -455,19 +455,21 @@ public class ParentOpMode extends LinearOpMode {
 
     if (ballcount==0){
         Tinylightcoller(green);
-    } else if (ballcount==1) {
-      Tinylightcoller(blue);}
+    }
+    else if (ballcount==1) {
+        Tinylightcoller(blue);}
     else if (ballcount==2) {
         Tinylightcoller(yellow);
-    } else if (ballcount==3) {
-      Tinylightcoller(orange);
-    } else if (ballcount==4) {
-      Tinylightcoller(red);
-    } else if (ballcount>4) {
-      Tinylightcoller(violet);
     }
-
-
+    else if (ballcount==3) {
+        Tinylightcoller(orange);
+    }
+    else if (ballcount==4) {
+        Tinylightcoller(red);
+    }
+    else if (ballcount>4) {
+        Tinylightcoller(violet);
+    }
    }
 
 
